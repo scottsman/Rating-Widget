@@ -1,20 +1,18 @@
 from PyQt4 import QtCore, QtGui
 
+import os
+
 class RatingWidget(QtGui.QWidget):
     """
     """
     
-    def __init__(self, parent=None):
+    def __init__(self, parent=None, star_path=None):
         """
         """
         QtGui.QWidget.__init__(self, parent)
 
-        #temp color
-        palette = QtGui.QPalette()
-        palette.setColor(QtGui.QPalette.WindowText, QtGui.QColor(255, 0, 0))
-        self.setPalette(palette)
-
-        star_path = '/home/scottsman/Downloads/rating/rating.png'
+        if not star_path:
+            star_path = os.path.join(os.path.dirname(__file__), 'rating.png')
         oneStar = StarLabel(star_path, 1, self)
         twoStar = StarLabel(star_path, 2, self)
         threeStar = StarLabel(star_path, 3, self)
@@ -46,11 +44,9 @@ class RatingWidget(QtGui.QWidget):
             for star in self.stars:
                 if star.value <= star_label.value:
                     star.active = True
-                    star.visible = True
                     star.setImage(True)
                 else:
                     star.active = False
-                    star.visible = False
                     star.setImage(False)
         else:
             self.setActiveStarsVisible()
@@ -59,10 +55,8 @@ class RatingWidget(QtGui.QWidget):
         if visible:
             for star in self.stars:
                 if star.value <= star_label.value:
-                    star.visible = True
                     star.setImage(True)
                 else:
-                    star.visible = False
                     star.setImage(False)
         else:
             self.setActiveStarsVisible()
@@ -87,7 +81,6 @@ class StarLabel(QtGui.QLabel):
         self.image_path = image_path
         self.parent = parent
         self.active = False
-        self.visible = False
         self.value = value
 
         self.setMouseTracking(True)
@@ -105,14 +98,10 @@ class StarLabel(QtGui.QLabel):
     def eventFilter(self, obj, event):
         """
         """
-        if event.type() == QtCore.QEvent.Enter:# and self.active == False:
+        if event.type() == QtCore.QEvent.Enter:
             self.parent.setStarsVisible(self, True)
-        elif event.type() == QtCore.QEvent.Leave:# and self.active == False:
+        elif event.type() == QtCore.QEvent.Leave:
             self.parent.setStarsVisible(self, False)
-        elif event.type() == QtCore.QEvent.MouseButtonRelease:# and self.active == False:
+        elif event.type() == QtCore.QEvent.MouseButtonRelease:
             self.parent.setStarsActive(self, True)
-        '''
-        elif event.type() == QtCore.QEvent.MouseButtonRelease and self.active == True:
-            self.parent.setStarsActive(self, False)
-        '''
         return False
