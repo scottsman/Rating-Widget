@@ -5,10 +5,12 @@ import os
 class RatingWidget(QtGui.QWidget):
     """
     """
-    
+
     def __init__(self, parent=None, star_path=None):
         """
         """
+        self.value = 0
+
         QtGui.QWidget.__init__(self, parent)
 
         if not star_path:
@@ -41,6 +43,7 @@ class RatingWidget(QtGui.QWidget):
 
     def setStarsActive(self, star_label, active):
         if active:
+            self.value = star_label.value
             for star in self.stars:
                 if star.value <= star_label.value:
                     star.active = True
@@ -67,7 +70,7 @@ class RatingWidget(QtGui.QWidget):
         if event.type() == QtCore.QEvent.Leave:
             self.setActiveStarsVisible()
         return False
-            
+
 class StarLabel(QtGui.QLabel):
     """
     """
