@@ -7,81 +7,81 @@ class RatingWidget(QtGui.QWidget):
     """
     """
 
-    def __init__(self, parent=None, star_path=None, num_stars=5):
+    def __init__(self, parent=None, icon_path=None, num_icons=5):
         """
         """
         super(RatingWidget, self).__init__(parent)
 
         self.value = 0
-        self.max_value = num_stars
+        self.max_value = num_icons
 
-        if not star_path:
-            star_path = os.path.join(os.path.dirname(__file__), 'rating.png')
+        if not icon_path:
+            icon_path = os.path.join(os.path.dirname(__file__), 'rating.png')
 
         # Dynamically create QWidget layout
         hbox = QtGui.QHBoxLayout()
         hbox.setSpacing(0)
 
-        # Add stars to the layout
-        self.stars = []
-        for star_value in range(1, num_stars + 1):
-            star_label = StarLabel(star_path, star_value, parent=self)
+        # Add icons to the layout
+        self.icons = []
+        for icon_value in range(1, num_icons + 1):
+            icon_label = IconLabel(icon_path, icon_value, parent=self)
 
-            self.stars.append(star_label)
-            hbox.addWidget(star_label)
+            self.icons.append(icon_label)
+            hbox.addWidget(icon_label)
 
 
         self.setLayout(hbox)
 
         self.installEventFilter(self)
 
-    def setActiveStarsVisible(self):
-        for star in self.stars:
-            if star.active:
-                star.setImage(True)
+    def setActiveIconsVisible(self):
+        for icon in self.icons:
+            if icon.active:
+                icon.setImage(True)
             else:
-                star.setImage(False)
+                icon.setImage(False)
 
-    def setStarsActive(self, star_label, active):
+    def setIconsActive(self, icon_label, active):
         if active:
-            self.value = star_label.value
-            for star in self.stars:
-                if star.value <= star_label.value:
-                    star.active = True
-                    star.setImage(True)
+            self.value = icon_label.value
+            for icon in self.icons:
+                if icon.value <= icon_label.value:
+                    icon.active = True
+                    icon.setImage(True)
                 else:
-                    star.active = False
-                    star.setImage(False)
+                    icon.active = False
+                    icon.setImage(False)
         else:
-            self.setActiveStarsVisible()
+            self.setActiveIconsVisible()
 
-    def setStarsVisible(self, star_label, visible):
+    def setIconsVisible(self, icon_label, visible):
         if visible:
-            for star in self.stars:
-                if star.value <= star_label.value:
-                    star.setImage(True)
+            for icon in self.icons:
+                if icon.value <= icon_label.value:
+                    icon.setImage(True)
                 else:
-                    star.setImage(False)
+                    icon.setImage(False)
         else:
-            self.setActiveStarsVisible()
+            self.setActiveIconsVisible()
 
     def eventFilter(self, obj, event):
         """
         """
         if event.type() == QtCore.QEvent.Leave:
-            self.setActiveStarsVisible()
+            self.setActiveIconsVisible()
         return False
 
 
-class StarLabel(QtGui.QLabel):
+class IconLabel(QtGui.QLabel):
     """
     """
     def __init__(self, image_path, value, parent=None):
         """
             Args:
-                value (int): value of the star
+                value (int): value of the icon
         """
-        super(StarLabel, self).__init__(parent)
+        super(IconLabel, self).__init__(parent)
 
         self.image_path = image_path
         self.parent = parent
@@ -104,10 +104,10 @@ class StarLabel(QtGui.QLabel):
         """
         """
         if event.type() == QtCore.QEvent.Enter:
-            self.parent.setStarsVisible(self, True)
+            self.parent.setIconsVisible(self, True)
         elif event.type() == QtCore.QEvent.Leave:
-            self.parent.setStarsVisible(self, False)
+            self.parent.setIconsVisible(self, False)
         elif event.type() == QtCore.QEvent.MouseButtonRelease:
-            self.parent.setStarsActive(self, True)
+            self.parent.setIconsActive(self, True)
         return False
 
