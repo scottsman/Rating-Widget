@@ -1,0 +1,7 @@
+# TODO
+
+* `value` should be a property of RatingWidget
+* I don't think `icon.active` setting should occur in the RatingWidget.
+* Finish up the docstrings.
+* Write a few tests.
+
