@@ -1,6 +1,7 @@
+import os
+
 from PyQt4 import QtCore, QtGui
 
-import os
 
 class RatingWidget(QtGui.QWidget):
     """
@@ -71,6 +72,7 @@ class RatingWidget(QtGui.QWidget):
             self.setActiveStarsVisible()
         return False
 
+
 class StarLabel(QtGui.QLabel):
     """
     """
@@ -108,3 +110,4 @@ class StarLabel(QtGui.QLabel):
         elif event.type() == QtCore.QEvent.MouseButtonRelease:
             self.parent.setStarsActive(self, True)
         return False
+
