@@ -115,7 +115,7 @@ class RatingWidget(QtGui.QWidget):
             self.setActiveIconsVisible()
         else:
             super(RatingWidget, self).eventFilter(obj, event)
-        return True
+        return False
 
 
 class IconLabel(QtGui.QLabel):
@@ -165,5 +165,7 @@ class IconLabel(QtGui.QLabel):
         # When the mouse _clicks_ the label area, set the icon active.
         elif event.type() == QtCore.QEvent.MouseButtonRelease:
             self.parent.setIconsActive(self, True)
-        return True
+        else:
+            super(IconLabel, self).eventFilter(obj, event)
+        return False
 
