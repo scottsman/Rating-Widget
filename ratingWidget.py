@@ -176,4 +176,38 @@ class IconLabel(QtGui.QLabel):
             super(IconLabel, self).eventFilter(obj, event)
         return False
 
+    # Properties
+
+    def _get_active(self):
+        """Get the active state of the label.
+        """
+        return self._active
+
+    def _set_active(self, value):
+        """Set the active state of the label.
+        Args:
+            value (bool): The active state to set for the label.
+        """
+        self._active = value
+
+    def _get_value(self):
+        """Get the value state of the label.
+        """
+        return self._value
+
+    def _set_value(self, value):
+        """Set the value state of the label.
+        Args:
+            value (int): The value to set for the label.
+        """
+        self._value = value
+
+    value = property(_get_value, _set_value,
+        doc="Get/Set value of the icon."
+    )
+
+    active = property(_get_active, _set_active,
+        doc="Get/Set active state of the icon."
+    )
+
 
