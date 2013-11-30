@@ -139,7 +139,6 @@ class IconLabel(QtGui.QLabel):
         super(IconLabel, self).__init__(parent)
 
         self.image_path = image_path
-        self.parent = parent
         self.active = False
         self.value = value
 
@@ -166,13 +165,15 @@ class IconLabel(QtGui.QLabel):
         """
         # When the mouse _enters_ the label area, set the icon visible.
         if event.type() == QtCore.QEvent.Enter:
-            self.parent.setIconsVisible(self, True)
+            self.parent().setIconsVisible(self, True)
         # When the mouse _leaves_ the label area, set the icon invisible.
         elif event.type() == QtCore.QEvent.Leave:
-            self.parent.setIconsVisible(self, False)
+            self.parent().setIconsVisible(self, False)
         # When the mouse _clicks_ the label area, set the icon active.
         elif event.type() == QtCore.QEvent.MouseButtonRelease:
-            self.parent.setIconsActive(self, True)
+            self.parent().setIconsActive(self, True)
         else:
             super(IconLabel, self).eventFilter(obj, event)
         return False
+
+
