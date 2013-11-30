@@ -6,6 +6,7 @@ from PyQt4 import QtCore, QtGui
 class RatingWidget(QtGui.QWidget):
     """A QWidget that enables a user to choose a rating.
     """
+    value_updated = QtCore.pyqtSignal(int)
 
     def __init__(self, parent=None, icon_path=None, num_icons=5):
         """Constructor.
@@ -75,6 +76,7 @@ class RatingWidget(QtGui.QWidget):
         """
         if active:
             self._value = icon_label.value
+            self.value_updated.emit(self._value)
             for icon in self.icons:
                 if icon.value <= icon_label.value:
                     icon.active = True
