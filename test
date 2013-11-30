@@ -10,14 +10,37 @@ from ratingWidget import RatingWidget
 class MainWindow(QtGui.QMainWindow):
     def __init__(self):
         super(MainWindow, self).__init__()
-        central_widget = RatingWidget(num_icons=10)
+
+        # Make a label for the rating widget.
+        rating_label_widget = QtGui.QLabel('Rating:')
+
+        # Make a widget to report the current value of the rating widget.
+        rating_value_widget = QtGui.QLabel('0')
+
+        # Make the rating widget.
+        rating_widget = RatingWidget(num_icons=10)
+        rating_widget.value_updated.connect(
+            lambda value: rating_value_widget.setText(str(value))
+        )
+
+
+        # Make the central widget layout.
+        main_layout = QtGui.QHBoxLayout()
+        main_layout.addWidget(rating_label_widget)
+        main_layout.addWidget(rating_value_widget)
+        main_layout.addWidget(rating_widget, stretch=1)
+
+        # Make the central widget.
+        central_widget = QtGui.QWidget()
+        central_widget.setLayout(main_layout)
         self.setCentralWidget(central_widget)
+
 
 
 if __name__ == '__main__':
     app = QtGui.QApplication(sys.argv)
     app.setStyle('Cleanlooks')
-    main_window =  MainWindow()
+    main_window = MainWindow()
     main_window.show()
     sys.exit(app.exec_())
 

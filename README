@@ -1,6 +1,7 @@
 # TODO
 
-* `value` should be a property of RatingWidget
 * I don't think `icon.active` setting should occur in the RatingWidget.
 * Write a few tests.
+* Another approach for setting icons visible and active.
+** value should be a property so we can set it internally and externally and also trigger the value_updated signal.
 

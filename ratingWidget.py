@@ -6,6 +6,7 @@ from PyQt4 import QtCore, QtGui
 class RatingWidget(QtGui.QWidget):
     """A QWidget that enables a user to choose a rating.
     """
+    value_updated = QtCore.pyqtSignal(int)
 
     def __init__(self, parent=None, icon_path=None, num_icons=5):
         """Constructor.
@@ -19,8 +20,8 @@ class RatingWidget(QtGui.QWidget):
         super(RatingWidget, self).__init__(parent)
 
         # Set defaults.
-        self.value = 0
-        self.max_value = num_icons
+        self._value = 0
+        self._max_value = num_icons
 
         # Fallback for the icon_path.
         if not icon_path:
@@ -32,8 +33,11 @@ class RatingWidget(QtGui.QWidget):
 
         # Add icons to the layout.
         self.icons = []
-        for icon_value in range(1, num_icons + 1):
+        for icon_value in range(1, self._max_value+ 1):
             icon_label = IconLabel(icon_path, icon_value, parent=self)
+            icon_label.mouse_enter_icon.connect(self.set_icons_visible)
+            icon_label.mouse_leave_icon.connect(self.set_icons_visible)
+            icon_label.mouse_release_icon.connect(self.set_icons_active)
 
             self.icons.append(icon_label)
             hbox.addWidget(icon_label)
@@ -44,16 +48,16 @@ class RatingWidget(QtGui.QWidget):
 
         self.installEventFilter(self)
 
-    def setActiveIconsVisible(self):
+    def set_active_icons_visible(self):
         """Display any icons that are active.
         """
         for icon in self.icons:
             if icon.active:
-                icon.setImage(True)
+                icon.set_image(True)
             else:
-                icon.setImage(False)
+                icon.set_image(False)
 
-    def setIconsActive(self, icon_label, active):
+    def set_icons_active(self, icon_label, active):
         """Update the icons active state.
 
         All icons less and equal to the value of the icon_label have their active status
@@ -71,18 +75,19 @@ class RatingWidget(QtGui.QWidget):
                 TODO. Remove/Rename this. Confusing and it doesn't look like it's being used.
         """
         if active:
-            self.value = icon_label.value
+            self._value = icon_label.value
+            self.value_updated.emit(self._value)
             for icon in self.icons:
                 if icon.value <= icon_label.value:
                     icon.active = True
-                    icon.setImage(True)
+                    icon.set_image(True)
                 else:
                     icon.active = False
-                    icon.setImage(False)
+                    icon.set_image(False)
         else:
-            self.setActiveIconsVisible()
+            self.set_active_icons_visible()
 
-    def setIconsVisible(self, icon_label, visible):
+    def set_icons_visible(self, icon_label, visible):
         """Update the icons visibility.
 
         Args:
@@ -94,11 +99,11 @@ class RatingWidget(QtGui.QWidget):
         if visible:
             for icon in self.icons:
                 if icon.value <= icon_label.value:
-                    icon.setImage(True)
+                    icon.set_image(True)
                 else:
-                    icon.setImage(False)
+                    icon.set_image(False)
         else:
-            self.setActiveIconsVisible()
+            self.set_active_icons_visible()
 
     def eventFilter(self, obj, event):
         """Event filter defining custom actions.
@@ -112,15 +117,28 @@ class RatingWidget(QtGui.QWidget):
         """
         # When the mouse leaves the widget, set the icons visibility to it's value state.
         if event.type() == QtCore.QEvent.Leave:
-            self.setActiveIconsVisible()
+            self.set_active_icons_visible()
         else:
             super(RatingWidget, self).eventFilter(obj, event)
         return False
+
+    @property
+    def value(self):
+        return self._value
+
+    @property
+    def max_value(self):
+        return self._max_value
 
 
 class IconLabel(QtGui.QLabel):
     """A Qlabel that to represent an icon in the rating widget.
     """
+
+    mouse_enter_icon = QtCore.pyqtSignal(QtGui.QLabel, bool)
+    mouse_leave_icon = QtCore.pyqtSignal(QtGui.QLabel, bool)
+    mouse_release_icon = QtCore.pyqtSignal(QtGui.QLabel, bool)
+
     def __init__(self, image_path, value, parent=None):
         """Constructor.
         Args:
@@ -130,8 +148,8 @@ class IconLabel(QtGui.QLabel):
         """
         super(IconLabel, self).__init__(parent)
 
+        # TODO protect image_path
         self.image_path = image_path
-        self.parent = parent
         self.active = False
         self.value = value
 
@@ -140,7 +158,7 @@ class IconLabel(QtGui.QLabel):
 
         self.installEventFilter(self)
 
-    def setImage(self, value):
+    def set_image(self, value):
         """Set the image for the label.
 
         Args:
@@ -158,14 +176,49 @@ class IconLabel(QtGui.QLabel):
         """
         # When the mouse _enters_ the label area, set the icon visible.
         if event.type() == QtCore.QEvent.Enter:
-            self.parent.setIconsVisible(self, True)
+            self.mouse_enter_icon.emit(self, True)
         # When the mouse _leaves_ the label area, set the icon invisible.
         elif event.type() == QtCore.QEvent.Leave:
-            self.parent.setIconsVisible(self, False)
+            self.mouse_leave_icon.emit(self, False)
         # When the mouse _clicks_ the label area, set the icon active.
         elif event.type() == QtCore.QEvent.MouseButtonRelease:
-            self.parent.setIconsActive(self, True)
+            self.mouse_release_icon.emit(self, True)
         else:
             super(IconLabel, self).eventFilter(obj, event)
         return False
+
+    # Properties
+
+    def _get_active(self):
+        """Get the active state of the label.
+        """
+        return self._active
+
+    def _set_active(self, value):
+        """Set the active state of the label.
+        Args:
+            value (bool): The active state to set for the label.
+        """
+        self._active = value
+
+    def _get_value(self):
+        """Get the value state of the label.
+        """
+        return self._value
+
+    def _set_value(self, value):
+        """Set the value state of the label.
+        Args:
+            value (int): The value to set for the label.
+        """
+        self._value = value
+
+    value = property(_get_value, _set_value,
+        doc="Get/Set value of the icon."
+    )
+
+    active = property(_get_active, _set_active,
+        doc="Get/Set active state of the icon."
+    )
+
 
