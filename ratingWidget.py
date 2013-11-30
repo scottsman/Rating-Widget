@@ -19,8 +19,8 @@ class RatingWidget(QtGui.QWidget):
         super(RatingWidget, self).__init__(parent)
 
         # Set defaults.
-        self.value = 0
-        self.max_value = num_icons
+        self._value = 0
+        self._max_value = num_icons
 
         # Fallback for the icon_path.
         if not icon_path:
@@ -32,7 +32,7 @@ class RatingWidget(QtGui.QWidget):
 
         # Add icons to the layout.
         self.icons = []
-        for icon_value in range(1, num_icons + 1):
+        for icon_value in range(1, self._max_value+ 1):
             icon_label = IconLabel(icon_path, icon_value, parent=self)
 
             self.icons.append(icon_label)
@@ -71,7 +71,7 @@ class RatingWidget(QtGui.QWidget):
                 TODO. Remove/Rename this. Confusing and it doesn't look like it's being used.
         """
         if active:
-            self.value = icon_label.value
+            self._value = icon_label.value
             for icon in self.icons:
                 if icon.value <= icon_label.value:
                     icon.active = True
@@ -116,6 +116,14 @@ class RatingWidget(QtGui.QWidget):
         else:
             super(RatingWidget, self).eventFilter(obj, event)
         return False
+
+    @property
+    def value(self):
+        return self._value
+
+    @property
+    def max_value(self):
+        return self._max_value
 
 
 class IconLabel(QtGui.QLabel):
@@ -168,4 +176,3 @@ class IconLabel(QtGui.QLabel):
         else:
             super(IconLabel, self).eventFilter(obj, event)
         return False
-
