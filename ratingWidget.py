@@ -44,16 +44,16 @@ class RatingWidget(QtGui.QWidget):
 
         self.installEventFilter(self)
 
-    def setActiveIconsVisible(self):
+    def set_active_icons_visible(self):
         """Display any icons that are active.
         """
         for icon in self.icons:
             if icon.active:
-                icon.setImage(True)
+                icon.set_image(True)
             else:
-                icon.setImage(False)
+                icon.set_image(False)
 
-    def setIconsActive(self, icon_label, active):
+    def set_icons_active(self, icon_label, active):
         """Update the icons active state.
 
         All icons less and equal to the value of the icon_label have their active status
@@ -75,14 +75,14 @@ class RatingWidget(QtGui.QWidget):
             for icon in self.icons:
                 if icon.value <= icon_label.value:
                     icon.active = True
-                    icon.setImage(True)
+                    icon.set_image(True)
                 else:
                     icon.active = False
-                    icon.setImage(False)
+                    icon.set_image(False)
         else:
-            self.setActiveIconsVisible()
+            self.set_active_icons_visible()
 
-    def setIconsVisible(self, icon_label, visible):
+    def set_icons_visible(self, icon_label, visible):
         """Update the icons visibility.
 
         Args:
@@ -94,11 +94,11 @@ class RatingWidget(QtGui.QWidget):
         if visible:
             for icon in self.icons:
                 if icon.value <= icon_label.value:
-                    icon.setImage(True)
+                    icon.set_image(True)
                 else:
-                    icon.setImage(False)
+                    icon.set_image(False)
         else:
-            self.setActiveIconsVisible()
+            self.set_active_icons_visible()
 
     def eventFilter(self, obj, event):
         """Event filter defining custom actions.
@@ -112,7 +112,7 @@ class RatingWidget(QtGui.QWidget):
         """
         # When the mouse leaves the widget, set the icons visibility to it's value state.
         if event.type() == QtCore.QEvent.Leave:
-            self.setActiveIconsVisible()
+            self.set_active_icons_visible()
         else:
             super(RatingWidget, self).eventFilter(obj, event)
         return False
@@ -147,7 +147,7 @@ class IconLabel(QtGui.QLabel):
 
         self.installEventFilter(self)
 
-    def setImage(self, value):
+    def set_image(self, value):
         """Set the image for the label.
 
         Args:
@@ -165,13 +165,13 @@ class IconLabel(QtGui.QLabel):
         """
         # When the mouse _enters_ the label area, set the icon visible.
         if event.type() == QtCore.QEvent.Enter:
-            self.parent().setIconsVisible(self, True)
+            self.parent().set_icons_visible(self, True)
         # When the mouse _leaves_ the label area, set the icon invisible.
         elif event.type() == QtCore.QEvent.Leave:
-            self.parent().setIconsVisible(self, False)
+            self.parent().set_icons_visible(self, False)
         # When the mouse _clicks_ the label area, set the icon active.
         elif event.type() == QtCore.QEvent.MouseButtonRelease:
-            self.parent().setIconsActive(self, True)
+            self.parent().set_icons_active(self, True)
         else:
             super(IconLabel, self).eventFilter(obj, event)
         return False
