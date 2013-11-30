@@ -34,6 +34,9 @@ class RatingWidget(QtGui.QWidget):
         self.icons = []
         for icon_value in range(1, self._max_value+ 1):
             icon_label = IconLabel(icon_path, icon_value, parent=self)
+            icon_label.mouse_enter_icon.connect(self.set_icons_visible)
+            icon_label.mouse_leave_icon.connect(self.set_icons_visible)
+            icon_label.mouse_release_icon.connect(self.set_icons_active)
 
             self.icons.append(icon_label)
             hbox.addWidget(icon_label)
@@ -129,6 +132,11 @@ class RatingWidget(QtGui.QWidget):
 class IconLabel(QtGui.QLabel):
     """A Qlabel that to represent an icon in the rating widget.
     """
+
+    mouse_enter_icon = QtCore.pyqtSignal(QtGui.QLabel, bool)
+    mouse_leave_icon = QtCore.pyqtSignal(QtGui.QLabel, bool)
+    mouse_release_icon = QtCore.pyqtSignal(QtGui.QLabel, bool)
+
     def __init__(self, image_path, value, parent=None):
         """Constructor.
         Args:
@@ -138,6 +146,7 @@ class IconLabel(QtGui.QLabel):
         """
         super(IconLabel, self).__init__(parent)
 
+        # TODO protect image_path
         self.image_path = image_path
         self.active = False
         self.value = value
@@ -165,13 +174,13 @@ class IconLabel(QtGui.QLabel):
         """
         # When the mouse _enters_ the label area, set the icon visible.
         if event.type() == QtCore.QEvent.Enter:
-            self.parent().set_icons_visible(self, True)
+            self.mouse_enter_icon.emit(self, True)
         # When the mouse _leaves_ the label area, set the icon invisible.
         elif event.type() == QtCore.QEvent.Leave:
-            self.parent().set_icons_visible(self, False)
+            self.mouse_leave_icon.emit(self, False)
         # When the mouse _clicks_ the label area, set the icon active.
         elif event.type() == QtCore.QEvent.MouseButtonRelease:
-            self.parent().set_icons_active(self, True)
+            self.mouse_release_icon.emit(self, True)
         else:
             super(IconLabel, self).eventFilter(obj, event)
         return False
