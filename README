@@ -1,7 +1,7 @@
 # TODO
 
 * I don't think `icon.active` setting should occur in the RatingWidget.
-* Another approach for setting icons visible and active.
 * Write a few tests.
-* Icon should send a signal rather than call a method on the parent.
+* Another approach for setting icons visible and active.
+** value should be a property so we can set it internally and externally and also trigger the value_updated signal.
 
