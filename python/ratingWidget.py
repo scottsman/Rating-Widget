@@ -73,13 +73,10 @@ class RatingWidget(QtGui.QWidget):
             active (bool): Control if if the icons active state are set or used.
                 TODO. Remove/Rename this. Confusing and it doesn't look like it's being used.
         """
-        if active:
-            self._value = icon_label.value
-            self.value_updated.emit(self._value)
-            for icon in self.icons:
-                icon.active = (icon.value <= icon_label.value)
-        else:
-            self.set_active_icons_visible()
+        self._value = icon_label.value
+        self.value_updated.emit(self._value)
+        for icon in self.icons:
+            icon.active = (icon.value <= icon_label.value)
 
     def set_icons_visible(self, icon_label, visible):
         """Update the icons visibility.
@@ -200,13 +197,6 @@ class IconLabel(QtGui.QLabel):
         """
         return self._value
 
-    def _set_value(self, value):
-        """Set the value state of the label.
-        Args:
-            value (int): The value to set for the label.
-        """
-        self._value = value
-
     def _get_visible(self):
         """Get the visible state of the label.
         """
@@ -221,15 +211,15 @@ class IconLabel(QtGui.QLabel):
         self.set_image(value)
 
     active = property(_get_active, _set_active,
-        doc="Get/Set active state of the icon."
+        doc="Get/Set the active state of the icon."
     )
 
-    value = property(_get_value, _set_value,
-        doc="Get/Set value of the icon."
+    value = property(_get_value,
+        doc="Get the value of the icon."
     )
 
     visible = property(_get_visible, _set_visible,
-        doc="Get/Set visible state of the icon."
+        doc="Get/Set the visible state of the icon."
     )
 
 
