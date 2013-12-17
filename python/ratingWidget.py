@@ -27,7 +27,7 @@ class RatingWidget(QtGui.QWidget):
 
         # Fallback for the icon_path.
         if not icon_path:
-            icon_path = os.path.join(os.path.dirname(__file__), 'rating.png')
+            icon_path = os.path.join(os.path.dirname(__file__), '..', 'media', 'rating.png')
 
         # Dynamically create QWidget layout.
         hbox = QtGui.QHBoxLayout()
