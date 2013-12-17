@@ -6,6 +6,8 @@ from PyQt4 import QtCore, QtGui
 class RatingWidget(QtGui.QWidget):
     """A QWidget that enables a user to choose a rating.
     """
+
+    # Signal thta emits the value of the widget when changed.
     value_updated = QtCore.pyqtSignal(int)
 
     def __init__(self, parent=None, icon_path=None, num_icons=5):
@@ -52,10 +54,7 @@ class RatingWidget(QtGui.QWidget):
         """Display any icons that are active.
         """
         for icon in self.icons:
-            if icon.active:
-                icon.set_image(True)
-            else:
-                icon.set_image(False)
+            icon.visible = icon.active
 
     def set_icons_active(self, icon_label, active):
         """Update the icons active state.
@@ -64,7 +63,7 @@ class RatingWidget(QtGui.QWidget):
         set to True. Everything higher than the icon_label have their active
         status set to False.
         eg. If icon_label 3 is passed in, then 1, 2 and 3 are active
-           and 4 and 5 are innactive. 
+           and 4 and 5 are innactive.
 
         If active is False then all icons visibility is reset according to their
         active status.
@@ -78,12 +77,7 @@ class RatingWidget(QtGui.QWidget):
             self._value = icon_label.value
             self.value_updated.emit(self._value)
             for icon in self.icons:
-                if icon.value <= icon_label.value:
-                    icon.active = True
-                    icon.set_image(True)
-                else:
-                    icon.active = False
-                    icon.set_image(False)
+                icon.active = (icon.value <= icon_label.value)
         else:
             self.set_active_icons_visible()
 
@@ -98,10 +92,7 @@ class RatingWidget(QtGui.QWidget):
         """
         if visible:
             for icon in self.icons:
-                if icon.value <= icon_label.value:
-                    icon.set_image(True)
-                else:
-                    icon.set_image(False)
+                icon.visible = (icon.value <= icon_label.value)
         else:
             self.set_active_icons_visible()
 
@@ -135,8 +126,11 @@ class IconLabel(QtGui.QLabel):
     """A Qlabel that to represent an icon in the rating widget.
     """
 
+    # Signal emitted when the mouse enteres the icon.
     mouse_enter_icon = QtCore.pyqtSignal(QtGui.QLabel, bool)
+    # Signal emitted when the mouse leaves the icon.
     mouse_leave_icon = QtCore.pyqtSignal(QtGui.QLabel, bool)
+    # Signal emitted when the mouse is released over an icon.
     mouse_release_icon = QtCore.pyqtSignal(QtGui.QLabel, bool)
 
     def __init__(self, image_path, value, parent=None):
@@ -149,9 +143,9 @@ class IconLabel(QtGui.QLabel):
         super(IconLabel, self).__init__(parent)
 
         # TODO protect image_path
-        self.image_path = image_path
-        self.active = False
-        self.value = value
+        self._image_path = image_path
+        self._active = False
+        self._value = value
 
         # Enable mouse events without buttons being held down.
         self.setMouseTracking(True)
@@ -166,7 +160,7 @@ class IconLabel(QtGui.QLabel):
                 the in picture in the label.
         """
         if value:
-            self.setPixmap(QtGui.QPixmap(self.image_path))
+            self.setPixmap(QtGui.QPixmap(self._image_path))
         else:
             # TODO. Could have a empty equivalent of the image_path.
             self.setPixmap(QtGui.QPixmap(None))
@@ -213,12 +207,29 @@ class IconLabel(QtGui.QLabel):
         """
         self._value = value
 
+    def _get_visible(self):
+        """Get the visible state of the label.
+        """
+        return bool(self.pixmap())
+
+    def _set_visible(self, value):
+        """Set the visible state of the label.
+
+        Args:
+            value (bool): The visible state for the label.
+        """
+        self.set_image(value)
+
+    active = property(_get_active, _set_active,
+        doc="Get/Set active state of the icon."
+    )
+
     value = property(_get_value, _set_value,
         doc="Get/Set value of the icon."
     )
 
-    active = property(_get_active, _set_active,
-        doc="Get/Set active state of the icon."
+    visible = property(_get_visible, _set_visible,
+        doc="Get/Set visible state of the icon."
     )
 
 
