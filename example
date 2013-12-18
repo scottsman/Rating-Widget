@@ -23,7 +23,6 @@ class MainWindow(QtGui.QMainWindow):
             lambda value: rating_value_widget.setText(str(value))
         )
 
-
         # Make the central widget layout.
         main_layout = QtGui.QHBoxLayout()
         main_layout.addWidget(rating_label_widget)
@@ -34,7 +33,6 @@ class MainWindow(QtGui.QMainWindow):
         central_widget = QtGui.QWidget()
         central_widget.setLayout(main_layout)
         self.setCentralWidget(central_widget)
-
 
 
 if __name__ == '__main__':

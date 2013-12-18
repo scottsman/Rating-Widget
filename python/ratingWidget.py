@@ -6,6 +6,8 @@ from PyQt4 import QtCore, QtGui
 class RatingWidget(QtGui.QWidget):
     """A QWidget that enables a user to choose a rating.
     """
+
+    # Signal thta emits the value of the widget when changed.
     value_updated = QtCore.pyqtSignal(int)
 
     def __init__(self, parent=None, icon_path=None, num_icons=5):
@@ -25,7 +27,7 @@ class RatingWidget(QtGui.QWidget):
 
         # Fallback for the icon_path.
         if not icon_path:
-            icon_path = os.path.join(os.path.dirname(__file__), 'rating.png')
+            icon_path = os.path.join(os.path.dirname(__file__), '..', 'media', 'rating.png')
 
         # Dynamically create QWidget layout.
         hbox = QtGui.QHBoxLayout()
@@ -42,7 +44,6 @@ class RatingWidget(QtGui.QWidget):
             self.icons.append(icon_label)
             hbox.addWidget(icon_label)
 
-
         # Set the created layout to the widget.
         self.setLayout(hbox)
 
@@ -52,40 +53,24 @@ class RatingWidget(QtGui.QWidget):
         """Display any icons that are active.
         """
         for icon in self.icons:
-            if icon.active:
-                icon.set_image(True)
-            else:
-                icon.set_image(False)
+            icon.visible = icon.active
 
-    def set_icons_active(self, icon_label, active):
+    def set_icons_active(self, icon_label):
         """Update the icons active state.
 
         All icons less and equal to the value of the icon_label have their active status
         set to True. Everything higher than the icon_label have their active
         status set to False.
         eg. If icon_label 3 is passed in, then 1, 2 and 3 are active
-           and 4 and 5 are innactive. 
-
-        If active is False then all icons visibility is reset according to their
-        active status.
+           and 4 and 5 are innactive.
 
         Args:
             icons_label (IconLabel): The icon to update to.
-            active (bool): Control if if the icons active state are set or used.
-                TODO. Remove/Rename this. Confusing and it doesn't look like it's being used.
         """
-        if active:
-            self._value = icon_label.value
-            self.value_updated.emit(self._value)
-            for icon in self.icons:
-                if icon.value <= icon_label.value:
-                    icon.active = True
-                    icon.set_image(True)
-                else:
-                    icon.active = False
-                    icon.set_image(False)
-        else:
-            self.set_active_icons_visible()
+        self._value = icon_label.value
+        self.value_updated.emit(self._value)
+        for icon in self.icons:
+            icon.active = (icon.value <= icon_label.value)
 
     def set_icons_visible(self, icon_label, visible):
         """Update the icons visibility.
@@ -98,10 +83,7 @@ class RatingWidget(QtGui.QWidget):
         """
         if visible:
             for icon in self.icons:
-                if icon.value <= icon_label.value:
-                    icon.set_image(True)
-                else:
-                    icon.set_image(False)
+                icon.visible = (icon.value <= icon_label.value)
         else:
             self.set_active_icons_visible()
 
@@ -135,8 +117,11 @@ class IconLabel(QtGui.QLabel):
     """A Qlabel that to represent an icon in the rating widget.
     """
 
+    # Signal emitted when the mouse enteres the icon.
     mouse_enter_icon = QtCore.pyqtSignal(QtGui.QLabel, bool)
+    # Signal emitted when the mouse leaves the icon.
     mouse_leave_icon = QtCore.pyqtSignal(QtGui.QLabel, bool)
+    # Signal emitted when the mouse is released over an icon.
     mouse_release_icon = QtCore.pyqtSignal(QtGui.QLabel, bool)
 
     def __init__(self, image_path, value, parent=None):
@@ -149,9 +134,9 @@ class IconLabel(QtGui.QLabel):
         super(IconLabel, self).__init__(parent)
 
         # TODO protect image_path
-        self.image_path = image_path
-        self.active = False
-        self.value = value
+        self._image_path = image_path
+        self._active = False
+        self._value = value
 
         # Enable mouse events without buttons being held down.
         self.setMouseTracking(True)
@@ -166,7 +151,7 @@ class IconLabel(QtGui.QLabel):
                 the in picture in the label.
         """
         if value:
-            self.setPixmap(QtGui.QPixmap(self.image_path))
+            self.setPixmap(QtGui.QPixmap(self._image_path))
         else:
             # TODO. Could have a empty equivalent of the image_path.
             self.setPixmap(QtGui.QPixmap(None))
@@ -206,19 +191,32 @@ class IconLabel(QtGui.QLabel):
         """
         return self._value
 
-    def _set_value(self, value):
-        """Set the value state of the label.
-        Args:
-            value (int): The value to set for the label.
+    def _get_visible(self):
+        """Get the visible state of the label.
         """
-        self._value = value
+        if not self.pixmap():
+            return False
+        else:
+            return not self.pixmap().isNull()
 
-    value = property(_get_value, _set_value,
-        doc="Get/Set value of the icon."
-    )
+    def _set_visible(self, value):
+        """Set the visible state of the label.
+
+        Args:
+            value (bool): The visible state for the label.
+        """
+        self.set_image(value)
 
     active = property(_get_active, _set_active,
-        doc="Get/Set active state of the icon."
+        doc="Get/Set the active state of the icon."
+    )
+
+    value = property(_get_value,
+        doc="Get the value of the icon."
+    )
+
+    visible = property(_get_visible, _set_visible,
+        doc="Get/Set the visible state of the icon."
     )
 
 
