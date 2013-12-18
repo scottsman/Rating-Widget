@@ -56,7 +56,7 @@ class TestRatingWidget(unittest.TestCase):
         self._setup_icons_active(rating_widget, limit)
 
         # Set all active icons visible.
-        rating_widget.set_active_icons_visible()
+        rating_widget._set_active_icons_visible()
 
         # Assert all active icons are now visible.
         for count, icon in enumerate(rating_widget.icons):
@@ -93,7 +93,7 @@ class TestRatingWidget(unittest.TestCase):
             self.assertFalse(icon.visible)
 
         test_icon = rating_widget.icons[2]
-        rating_widget.set_icons_visible(test_icon)
+        rating_widget._set_icons_visible(test_icon)
 
         # Assert all icons with a value less than or equal to the chosen icon,
         # are visible.

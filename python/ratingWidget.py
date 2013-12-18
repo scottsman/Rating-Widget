@@ -37,8 +37,8 @@ class RatingWidget(QtGui.QWidget):
         self.icons = []
         for icon_value in range(1, self._max_value+ 1):
             icon_label = IconLabel(icon_path, icon_value, parent=self)
-            icon_label.mouse_enter_icon.connect(self.set_icons_visible)
-            icon_label.mouse_leave_icon.connect(self.set_active_icons_visible)
+            icon_label.mouse_enter_icon.connect(self._set_icons_visible)
+            icon_label.mouse_leave_icon.connect(self._set_active_icons_visible)
             icon_label.mouse_release_icon.connect(self.set_icons_active)
 
             self.icons.append(icon_label)
@@ -49,7 +49,7 @@ class RatingWidget(QtGui.QWidget):
 
         self.installEventFilter(self)
 
-    def set_active_icons_visible(self):
+    def _set_active_icons_visible(self):
         """Display any icons that are active.
         """
         for icon in self.icons:
@@ -72,7 +72,7 @@ class RatingWidget(QtGui.QWidget):
         for icon in self.icons:
             icon.active = (icon.value <= icon_label.value)
 
-    def set_icons_visible(self, icon_label):
+    def _set_icons_visible(self, icon_label):
         """Update the icons visibility.
 
         Args:
@@ -96,7 +96,7 @@ class RatingWidget(QtGui.QWidget):
         """
         # When the mouse leaves the widget, set the icons visibility to it's value state.
         if event.type() == QtCore.QEvent.Leave:
-            self.set_active_icons_visible()
+            self._set_active_icons_visible()
         else:
             super(RatingWidget, self).eventFilter(obj, event)
         return False
