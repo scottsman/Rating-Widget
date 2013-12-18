@@ -26,14 +26,13 @@ class TestRatingWidget(unittest.TestCase):
         rating_widget = ratingWidget.RatingWidget(num_icons=3)
         self.assertTrue(len(rating_widget.icons) == 3)
 
-    def test_active_icons_visible(self):
-        """Assert that set_active_icons_visible correctly sets the visibility
-        for active icons.
+    def _setup_icons_active(self, rating_widget, limit):
+        """Helper to set a certain number of icons active but not visible.
+
+        Args:
+            rating_widget (QWidget): The rating widget being tested.
+            limit (int): The amount of icons to set active.
         """
-        rating_widget = ratingWidget.RatingWidget(num_icons=5)
-
-        limit = 3
-
         # Set icons below the limit to active
         for count, icon in enumerate(rating_widget.icons):
             if count < limit:
@@ -44,6 +43,16 @@ class TestRatingWidget(unittest.TestCase):
         # Assert that all icons are not visible for the sake of the test.
         for icon in rating_widget.icons:
             self.assertFalse(icon.visible)
+
+    def test_active_icons_visible(self):
+        """Assert that set_active_icons_visible correctly sets the visibility
+        for active icons.
+        """
+        rating_widget = ratingWidget.RatingWidget(num_icons=5)
+
+        limit = 3
+
+        self._setup_icons_active(rating_widget, limit)
 
         # Set all active icons visible.
         rating_widget.set_active_icons_visible()
@@ -89,6 +98,23 @@ class TestRatingWidget(unittest.TestCase):
         # are visible.
         for icon in rating_widget.icons:
             self.assertEqual(icon.visible, (icon.value <= test_icon.value))
+
+    def test_eventFilter(self):
+        """Assert that the mouse leaving the widget triggers the icons
+        to be set to their default state.
+        """
+        rating_widget = ratingWidget.RatingWidget(num_icons=5)
+
+        limit = 3
+
+        self._setup_icons_active(rating_widget, limit)
+
+        # Trigger the event filter
+        rating_widget.eventFilter(rating_widget, QtCore.QEvent(QtCore.QEvent.Leave))
+
+        # Assert all active icons are now visible.
+        for count, icon in enumerate(rating_widget.icons):
+            self.assertEqual(icon.visible, bool(count < limit))
 
 class TestIconLabel(unittest.TestCase):
 
