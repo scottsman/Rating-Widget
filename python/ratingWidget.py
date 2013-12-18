@@ -38,7 +38,7 @@ class RatingWidget(QtGui.QWidget):
         for icon_value in range(1, self._max_value+ 1):
             icon_label = IconLabel(icon_path, icon_value, parent=self)
             icon_label.mouse_enter_icon.connect(self.set_icons_visible)
-            icon_label.mouse_leave_icon.connect(self.set_icons_visible)
+            icon_label.mouse_leave_icon.connect(self.set_active_icons_visible)
             icon_label.mouse_release_icon.connect(self.set_icons_active)
 
             self.icons.append(icon_label)
@@ -72,7 +72,7 @@ class RatingWidget(QtGui.QWidget):
         for icon in self.icons:
             icon.active = (icon.value <= icon_label.value)
 
-    def set_icons_visible(self, icon_label, visible):
+    def set_icons_visible(self, icon_label):
         """Update the icons visibility.
 
         Args:
@@ -81,11 +81,8 @@ class RatingWidget(QtGui.QWidget):
                 or the active status.
                 TODO. Rename this. Confusing.
         """
-        if visible:
-            for icon in self.icons:
-                icon.visible = (icon.value <= icon_label.value)
-        else:
-            self.set_active_icons_visible()
+        for icon in self.icons:
+            icon.visible = (icon.value <= icon_label.value)
 
     def eventFilter(self, obj, event):
         """Event filter defining custom actions.
@@ -118,11 +115,11 @@ class IconLabel(QtGui.QLabel):
     """
 
     # Signal emitted when the mouse enteres the icon.
-    mouse_enter_icon = QtCore.pyqtSignal(QtGui.QLabel, bool)
+    mouse_enter_icon = QtCore.pyqtSignal(QtGui.QLabel)
     # Signal emitted when the mouse leaves the icon.
-    mouse_leave_icon = QtCore.pyqtSignal(QtGui.QLabel, bool)
+    mouse_leave_icon = QtCore.pyqtSignal(QtGui.QLabel)
     # Signal emitted when the mouse is released over an icon.
-    mouse_release_icon = QtCore.pyqtSignal(QtGui.QLabel, bool)
+    mouse_release_icon = QtCore.pyqtSignal(QtGui.QLabel)
 
     def __init__(self, image_path, value, parent=None):
         """Constructor.
@@ -161,13 +158,13 @@ class IconLabel(QtGui.QLabel):
         """
         # When the mouse _enters_ the label area, set the icon visible.
         if event.type() == QtCore.QEvent.Enter:
-            self.mouse_enter_icon.emit(self, True)
+            self.mouse_enter_icon.emit(self)
         # When the mouse _leaves_ the label area, set the icon invisible.
         elif event.type() == QtCore.QEvent.Leave:
-            self.mouse_leave_icon.emit(self, False)
+            self.mouse_leave_icon.emit(self)
         # When the mouse _clicks_ the label area, set the icon active.
         elif event.type() == QtCore.QEvent.MouseButtonRelease:
-            self.mouse_release_icon.emit(self, True)
+            self.mouse_release_icon.emit(self)
         else:
             super(IconLabel, self).eventFilter(obj, event)
         return False
