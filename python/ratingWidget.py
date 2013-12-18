@@ -44,7 +44,6 @@ class RatingWidget(QtGui.QWidget):
             self.icons.append(icon_label)
             hbox.addWidget(icon_label)
 
-
         # Set the created layout to the widget.
         self.setLayout(hbox)
 
@@ -56,7 +55,7 @@ class RatingWidget(QtGui.QWidget):
         for icon in self.icons:
             icon.visible = icon.active
 
-    def set_icons_active(self, icon_label, active):
+    def set_icons_active(self, icon_label):
         """Update the icons active state.
 
         All icons less and equal to the value of the icon_label have their active status
@@ -65,13 +64,8 @@ class RatingWidget(QtGui.QWidget):
         eg. If icon_label 3 is passed in, then 1, 2 and 3 are active
            and 4 and 5 are innactive.
 
-        If active is False then all icons visibility is reset according to their
-        active status.
-
         Args:
             icons_label (IconLabel): The icon to update to.
-            active (bool): Control if if the icons active state are set or used.
-                TODO. Remove/Rename this. Confusing and it doesn't look like it's being used.
         """
         self._value = icon_label.value
         self.value_updated.emit(self._value)
@@ -200,7 +194,10 @@ class IconLabel(QtGui.QLabel):
     def _get_visible(self):
         """Get the visible state of the label.
         """
-        return bool(self.pixmap())
+        if not self.pixmap():
+            return False
+        else:
+            return not self.pixmap().isNull()
 
     def _set_visible(self, value):
         """Set the visible state of the label.

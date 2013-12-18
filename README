@@ -1,6 +1,3 @@
 # TODO
 
 * Write a few tests.
-* Another approach for setting icons visible and active.
-** value should be a property so we can set it internally and externally and also trigger the value_updated signal.
-
