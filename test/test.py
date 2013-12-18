@@ -26,24 +26,6 @@ class TestRatingWidget(unittest.TestCase):
         rating_widget = ratingWidget.RatingWidget(num_icons=3)
         self.assertTrue(len(rating_widget.icons) == 3)
 
-    def test_set_icons_active(self):
-        """Assert that set_icons_active correctly sets icons active
-        """
-        rating_widget = ratingWidget.RatingWidget(num_icons=5)
-
-        # Assert all icons are initially false.
-        # Could be it's own test, but helps assert there is a change in active state.
-        for icon in rating_widget.icons:
-            self.assertFalse(icon.active)
-
-        test_icon = rating_widget.icons[2]
-        rating_widget.set_icons_active(test_icon)
-
-        # Assert all icons with a value less than or equal to the chosen icon,
-        # are active.
-        for icon in rating_widget.icons:
-            self.assertEqual(icon.active, (icon.value <= test_icon.value))
-
     def test_active_icons_visible(self):
         """Assert that set_active_icons_visible correctly sets the visibility
         for active icons.
@@ -70,6 +52,43 @@ class TestRatingWidget(unittest.TestCase):
         for count, icon in enumerate(rating_widget.icons):
             self.assertEqual(icon.visible, bool(count < limit))
 
+    def test_set_icons_active(self):
+        """Assert that set_icons_active correctly sets icons active up to
+        a specified icon.
+        """
+        rating_widget = ratingWidget.RatingWidget(num_icons=5)
+
+        # Assert all icons are initially false.
+        # Could be it's own test, but helps assert there is a change in active state.
+        for icon in rating_widget.icons:
+            self.assertFalse(icon.active)
+
+        test_icon = rating_widget.icons[2]
+        rating_widget.set_icons_active(test_icon)
+
+        # Assert all icons with a value less than or equal to the chosen icon,
+        # are active.
+        for icon in rating_widget.icons:
+            self.assertEqual(icon.active, (icon.value <= test_icon.value))
+
+    def test_set_icons_visible(self):
+        """Assert that set_icons_visible correctly sets visibility up to
+        a specified icon.
+        """
+        rating_widget = ratingWidget.RatingWidget(num_icons=5)
+
+        # Assert all icons are initially not visible.
+        # Could be it's own test, but helps assert there is a change in visibility state.
+        for icon in rating_widget.icons:
+            self.assertFalse(icon.visible)
+
+        test_icon = rating_widget.icons[2]
+        rating_widget.set_icons_visible(test_icon)
+
+        # Assert all icons with a value less than or equal to the chosen icon,
+        # are visible.
+        for icon in rating_widget.icons:
+            self.assertEqual(icon.visible, (icon.value <= test_icon.value))
 
 class TestIconLabel(unittest.TestCase):
 
