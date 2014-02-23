@@ -161,45 +161,59 @@ class TestIconLabel(unittest.TestCase):
         self.app = None
 
     def test_init(self):
+        """Assert each icon starts up in a certain state.
+        """
         self.assertFalse(self.icon_label.active)
         self.assertFalse(self.icon_label.visible)
         self.assertEqual(self.icon_label.value, 1)
 
     def test_set_get_active(self):
+        """Test setting and getting the active property works.
+        """
         self.icon_label.active = True
         self.assertTrue(self.icon_label.active)
 
     def test_set_get_visible(self):
+        """Test setting and getting the visible property works.
+        """
         self.icon_label.visible = True
         self.assertTrue(self.icon_label.visible)
 
-    def test_set_image_not_set(self):
-        self.assertFalse(self.icon_label.visible)
-
     def test_set_image_false(self):
+        """Test setting no image means icon is not visible.
+        """
         self.icon_label.set_image(False)
         self.assertFalse(self.icon_label.visible)
 
     def test_set_image_true(self):
+        """Test setting an image means icon is visible.
+        """
         self.icon_label.set_image(True)
         self.assertTrue(self.icon_label.visible)
 
-    # Signal testing
+    # Signal testing of custom eventFilter.
     def assert_icon_emitted(self, icon_emitted):
+        """Helper to test that the icon_emitted is the current one.
+        """
         self.assertEqual(icon_emitted, self.icon_label)
 
     def test_eventFilter_enter(self):
+        """Test when the mouse enters the bounds of the icon.
+        """
         self.icon_label.mouse_enter_icon.connect(self.assert_icon_emitted)
         self.icon_label.eventFilter(self.icon_label, QtCore.QEvent(QtCore.QEvent.Enter))
 
     def test_eventFilter_leave(self):
+        """Test when the mouse leaves the bounds of the icon.
+        """
         self.icon_label.mouse_leave_icon.connect(self.assert_icon_emitted)
         self.icon_label.eventFilter(self.icon_label, QtCore.QEvent(QtCore.QEvent.Leave))
 
     def test_eventFilter_mouseRelease(self):
+        """Test when the mouse button is released inside the icon.
+        """
         self.icon_label.mouse_release_icon.connect(self.assert_icon_emitted)
         QTest.mouseRelease(self.icon_label, QtCore.Qt.LeftButton)
-
 
 
 if __name__ == "__main__":

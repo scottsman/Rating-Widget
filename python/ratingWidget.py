@@ -150,7 +150,7 @@ class IconLabel(QtGui.QLabel):
         if value:
             self.setPixmap(QtGui.QPixmap(self._image_path))
         else:
-            # TODO. Could have a empty equivalent of the image_path.
+            # TODO. Could have an empty equivalent of the image_path.
             self.setPixmap(QtGui.QPixmap(None))
 
     def eventFilter(self, obj, event):
